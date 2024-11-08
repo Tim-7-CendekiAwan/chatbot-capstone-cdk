@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEFAULT_API_KEY = os.getenv("TOGETHER_API_KEY")
+DEFAULT_API_KEY = 'feb8b27e2202329fbb0312378e00823df1bc1fbfc7db906ed9611b1a478b2cb4'
 DEFAULT_BASE_URL = "https://api.together.xyz/v1"
 DEFAULT_MODEL = "meta-llama/Llama-Vision-Free"
 DEFAULT_TEMPERATURE = 0.7
