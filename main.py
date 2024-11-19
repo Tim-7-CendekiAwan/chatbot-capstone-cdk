@@ -1,3 +1,8 @@
-from components.chatbot_app import BuildChatbot
+from components.chatbot_app import Chatbot
 
-BuildChatbot()
+def main():
+    chatbot = Chatbot()
+    chatbot.GenerateUI()
+
+if __name__ == "__main__":
+    main()
