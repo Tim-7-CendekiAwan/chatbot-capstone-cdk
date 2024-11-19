@@ -120,6 +120,28 @@ if 'conversation_history' not in st.session_state:
 
 conversation_history = st.session_state['conversation_history']
 
+#slider untuk token setting
+token_budget = st.slider("Token Budget", 1024, 4096, chat_manager.token_budget, step=256)
+max_tokens = st.slider("Max Tokens per Message", 64, 1024, chat_manager.max_tokens, step=64)
+temperature = st.slider("Temperature", 0.0, 1.0, chat_manager.temperature, step=0.1)
+
+#new ConversationManager dengan setelan baru
+chat_manager.token_budget = token_budget
+chat_manager.max_tokens = max_tokens
+chat_manager.temperature = temperature
+
+# Dropdown for personality selection
+persona_options = ["Friendly and Supportive", "Serious and Formal", "Casual and Fun"]
+selected_persona = st.selectbox("Select Persona", persona_options)
+
+# Update the system message based on the selected persona
+if selected_persona == "Friendly and Supportive":
+    chat_manager.system_message = "You are a friendly and supportive guide. You answer questions with kindness, encouragement, and patience."
+elif selected_persona == "Serious and Formal":
+    chat_manager.system_message = "You are a formal and professional guide, providing clear and concise answers."
+else:
+    chat_manager.system_message = "You are a casual and fun guide, providing relaxed and humorous responses."
+
 # Chat input from the user
 user_input = st.chat_input("Write a message")
 
