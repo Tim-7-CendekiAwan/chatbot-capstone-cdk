@@ -1,6 +1,6 @@
 import streamlit as st
 from services.conversation_manager import ConversationManager
-from util.util import get_instance_id
+from util.get_instance_id import get_instance_id
 
 def BuildChatbot():
     ### Streamlit code ###
