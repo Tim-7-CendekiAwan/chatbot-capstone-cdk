@@ -2,34 +2,40 @@ import streamlit as st
 from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
 
-def BuildChatbot():
-    ### Streamlit code ###
-    st.title("AI Chatbot")
+class Chatbot:
+    def __init__(self):
+        self.instance_id = get_instance_id()
 
-    # Display EC2 Instance ID
-    instance_id = get_instance_id()
-    st.write(f"**EC2 Instance ID**: {instance_id}")
+    def GenerateUI(self) :
+    
+        ### Streamlit code ###
+        st.title("AI Chatbot")
 
-    # Initialize the ConversationManager object
-    if 'chat_manager' not in st.session_state:
-        st.session_state['chat_manager'] = ConversationManager()
+        # # Display EC2 Instance ID
+        st.write(f"**EC2 Instance ID**: {self.instance_id}")
 
-    chat_manager = st.session_state['chat_manager']
+        # Initialize the ConversationManager object
+        if 'chat_manager' not in st.session_state:
+            st.session_state['chat_manager'] = ConversationManager()
 
-    if 'conversation_history' not in st.session_state:
-        st.session_state['conversation_history'] = chat_manager.conversation_history
+        chat_manager = st.session_state['chat_manager']
 
-    conversation_history = st.session_state['conversation_history']
+        if 'conversation_history' not in st.session_state:
+            st.session_state['conversation_history'] = chat_manager.conversation_history
 
-    # Chat input from the user
-    user_input = st.chat_input("Write a message")
+        conversation_history = st.session_state['conversation_history']
 
-    # Call the chat manager to get a response from the AI
-    if user_input:
-        response = chat_manager.chat_completion(user_input)
+        # Chat input from the user
+        user_input = st.chat_input("Write a message")
 
-    # Display the conversation history
-    for message in conversation_history:
-        if message["role"] != "system":
-            with st.chat_message(message["role"]):
-                st.write(message["content"])
+        # Call the chat manager to get a response from the AI
+        if user_input:
+            response = chat_manager.chat_completion(user_input)
+
+        # Display the conversation history
+        for message in conversation_history:
+            if message["role"] != "system":
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
+
+    
