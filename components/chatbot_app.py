@@ -17,6 +17,8 @@ class Chatbot:
         # # Display EC2 Instance ID
         st.write(f"**EC2 Instance ID**: {self.instance_id}")
 
+        self.display_sidebar()
+
         # Initialize the ConversationManager object
         if "chat_manager" not in st.session_state:
             st.session_state["chat_manager"] = ConversationManager()
@@ -40,3 +42,7 @@ class Chatbot:
             if message["role"] != "system":
                 with st.chat_message(message["role"]):
                     st.write(message["content"])
+
+    def display_sidebar(self):
+        with st.sidebar:
+            personality = st.selectbox("Select personality", ("Formal", "Casual"))
