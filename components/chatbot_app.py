@@ -10,7 +10,9 @@ class Chatbot(ConversationManager):
         super().__init__()
 
     def GenerateUI(self):
-        st.set_page_config(page_title=self.page_title, page_icon="❤️")
+        st.set_page_config(
+            page_title=self.page_title, page_icon="❤️", initial_sidebar_state="auto"
+        )
 
         ### Streamlit code ###
         st.title("TemanTenang")
@@ -58,4 +60,6 @@ class Chatbot(ConversationManager):
 
         SYSTEM_ROLE = self.conversation_history[0]
         SYSTEM_ROLE.update({"content": SYSTEM_MESSAGE})
+
+        # update system role message
         self.conversation_history[0] = SYSTEM_ROLE
