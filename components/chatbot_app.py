@@ -3,13 +3,14 @@ from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
 
 
-class Chatbot:
+class Chatbot(ConversationManager):
     def __init__(self, page_title="TemanTenang | Tim 7 CendekiAwan"):
         self.instance_id = get_instance_id()
         self.page_title = page_title
+        super().__init__()
 
     def GenerateUI(self):
-        st.set_page_config(page_title=self.page_title)
+        st.set_page_config(page_title=self.page_title, page_icon="❤️")
 
         ### Streamlit code ###
         st.title("TemanTenang")
@@ -44,5 +45,17 @@ class Chatbot:
                     st.write(message["content"])
 
     def display_sidebar(self):
+        PERSONALITIES = ["Formal", "Casual", "Friendly"]
         with st.sidebar:
-            personality = st.selectbox("Select personality", ("Formal", "Casual"))
+            chosen_persona = st.selectbox("Select personality", PERSONALITIES)
+            self.set_chatbot_persona(chosen_persona)
+
+    def set_chatbot_persona(self, persona: str = "Formal"):
+        SYSTEM_MESSAGE = f"""You are a friendly and supportive guide. 
+                    You answer questions with kindness, encouragement, and patience, 
+                    always looking to help the user feel comfortable and confident. 
+                    You should act as a professional mental health conselor. Also, use a {persona} tone"""
+
+        SYSTEM_ROLE = self.conversation_history[0]
+        SYSTEM_ROLE.update({"content": SYSTEM_MESSAGE})
+        self.conversation_history[0] = SYSTEM_ROLE
