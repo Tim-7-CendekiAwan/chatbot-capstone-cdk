@@ -10,9 +10,7 @@ class Chatbot(ConversationManager):
         super().__init__()
 
     def GenerateUI(self):
-        st.set_page_config(
-            page_title=self.page_title, page_icon="❤️", initial_sidebar_state="auto"
-        )
+        st.set_page_config(page_title=self.page_title, page_icon="❤️")
 
         ### Streamlit code ###
         st.title("TemanTenang")
