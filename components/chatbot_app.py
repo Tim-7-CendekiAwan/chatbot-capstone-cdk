@@ -12,15 +12,12 @@ class Chatbot(ConversationManager):
     def GenerateUI(self):
         st.set_page_config(page_title=self.page_title, page_icon="❤️")
 
-        ### Streamlit code ###
         st.title("TemanTenang")
 
-        # # Display EC2 Instance ID
         st.write(f"**EC2 Instance ID**: {self.instance_id}")
 
         self.display_sidebar()
 
-        # Initialize the ConversationManager object
         if "chat_manager" not in st.session_state:
             st.session_state["chat_manager"] = ConversationManager()
 
@@ -31,18 +28,40 @@ class Chatbot(ConversationManager):
 
         conversation_history = st.session_state["conversation_history"]
 
-        # Chat input from the user
         user_input = st.chat_input("Write a message")
 
-        # Call the chat manager to get a response from the AI
         if user_input:
-            response = chat_manager.chat_completion(user_input)
+            self._display_conversation_history(
+                user_input, conversation_history, chat_manager
+            )
+            # TODO: DISPLAY CONVERSATION HISTORY. Mock Chat GPT
 
-        # Display the conversation history
+    def _display_user_input(self, user_input: str):
+        self.conversation_history.append({"role": "user", "content": user_input})
+
+        with st.chat_message("user"):
+            st.write(user_input)
+
+    def _display_streamed_response(
+        self, chat_manager, user_input, conversation_history
+    ):
+        response_stream = chat_manager.chat_completion(prompt=user_input, stream=True)
+        with st.chat_message("assistant"):
+            streamed_response = st.write_stream(response_stream)
+
+        conversation_history.append({"role": "assistant", "content": streamed_response})
+
+    def _display_conversation_history(
+        self, user_input: str, conversation_history, chat_manager
+    ):
         for message in conversation_history:
             if message["role"] != "system":
                 with st.chat_message(message["role"]):
                     st.write(message["content"])
+
+        self._display_user_input(user_input)
+
+        self._display_streamed_response(chat_manager, user_input, conversation_history)
 
     def display_sidebar(self):
         PERSONALITIES = ["Formal", "Casual", "Friendly"]
@@ -59,5 +78,4 @@ class Chatbot(ConversationManager):
         SYSTEM_ROLE = self.conversation_history[0]
         SYSTEM_ROLE.update({"content": SYSTEM_MESSAGE})
 
-        # update system role message
         self.conversation_history[0] = SYSTEM_ROLE
