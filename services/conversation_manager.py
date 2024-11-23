@@ -65,7 +65,9 @@ class ConversationManager:
         except Exception as e:
             print(f"Error enforcing token budget: {e}")
 
-    def chat_completion(self, prompt, temperature=None, max_tokens=None, model=None):
+    def chat_completion(
+        self, prompt, temperature=None, max_tokens=None, model=None, stream=False
+    ):
         temperature = temperature if temperature is not None else self.temperature
         max_tokens = max_tokens if max_tokens is not None else self.max_tokens
         model = model if model is not None else self.model
@@ -79,7 +81,10 @@ class ConversationManager:
                 messages=self.conversation_history,
                 temperature=temperature,
                 max_tokens=max_tokens,
+                stream=stream,
             )
+            if stream:
+                return response
         except Exception as e:
             print(f"Error generating response: {e}")
             return None
