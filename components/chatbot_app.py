@@ -34,7 +34,6 @@ class Chatbot(ConversationManager):
             self._display_conversation_history(
                 user_input, conversation_history, chat_manager
             )
-            # TODO: DISPLAY CONVERSATION HISTORY. Mock Chat GPT
 
     def _display_user_input(self, user_input: str):
         self.conversation_history.append({"role": "user", "content": user_input})
