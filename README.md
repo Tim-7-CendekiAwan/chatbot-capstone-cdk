@@ -2,6 +2,8 @@
 
 Welcome to the Tim 7 CendekiAwan AI App! This AI-powered app uses Streamlit for a seamless client-server experience, all hosted on AWS.
 
+![pylint]()
+
 ## Getting Started
 
 ### Step 1: Clone the Repository
