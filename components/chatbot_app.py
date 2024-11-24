@@ -33,8 +33,6 @@ class Chatbot:
         with st.chat_message("user"):
             st.write(user_input)
 
-        self.conversation_history.append({"role": "user", "content": user_input})
-
     def _display_assistant_response(self, user_input):
         response_stream = self.chat_manager.chat_completion(
             prompt=user_input, stream=True
