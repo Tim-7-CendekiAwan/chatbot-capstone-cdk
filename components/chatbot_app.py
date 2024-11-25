@@ -54,19 +54,22 @@ class Chatbot:
         self._display_assistant_response(user_input)
 
     def _display_sidebar(self):
-        personalities = ["Formal", "Casual", "Friendly"]
         with st.sidebar:
-            chosen_persona = st.selectbox("Select personality", personalities)
+            chosen_persona = self._display_persona_option()
             self._set_chatbot_persona(chosen_persona)
 
-    def _set_chatbot_persona(self, persona: str = "Formal"):
-        system_message = f"""You are a friendly and supportive guide. 
-                    You answer questions with kindness, encouragement, and patience, 
-                    always looking to help the user feel comfortable and confident. 
-                    You should act as a professional mental health conselor. 
-                    Also, use a {persona} tone"""
+    def _display_persona_option(self):
+        personalities = ("Professional", "Empathetic", "Motivational")
+        return st.selectbox("Select personality", personalities)
+
+    def _set_chatbot_persona(self, persona: str = "Professional"):
+        persona_prompt = f"""The user has selected {persona} persona.
+            Respond accordingly throughout this conversation."""
+        system_message_with_chosen_persona = (
+            self.chat_manager.system_message + persona_prompt
+        )
 
         system_role = self.conversation_history[0]
-        system_role.update({"content": system_message})
+        system_role.update({"content": system_message_with_chosen_persona})
 
         self.conversation_history[0] = system_role
