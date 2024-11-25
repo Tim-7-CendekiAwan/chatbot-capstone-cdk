@@ -13,29 +13,25 @@ from config.settings import (
 class ConversationManager:
     def __init__(
         self,
-        api_key=None,
-        base_url=None,
-        model=None,
-        temperature=None,
-        max_tokens=None,
-        token_budget=None,
+        api_key=DEFAULT_API_KEY,
+        base_url=DEFAULT_BASE_URL,
+        model=DEFAULT_MODEL,
+        temperature=DEFAULT_TEMPERATURE,
+        max_tokens=DEFAULT_MAX_TOKENS,
+        token_budget=DEFAULT_TOKEN_BUDGET,
     ):
-        if not api_key:
-            api_key = DEFAULT_API_KEY
-        if not base_url:
-            base_url = DEFAULT_BASE_URL
 
         self.client = OpenAI(api_key=api_key, base_url=base_url)
 
-        self.model = model if model else DEFAULT_MODEL
-        self.temperature = temperature if temperature else DEFAULT_TEMPERATURE
-        self.max_tokens = max_tokens if max_tokens else DEFAULT_MAX_TOKENS
-        self.token_budget = token_budget if token_budget else DEFAULT_TOKEN_BUDGET
+        self.model = model
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.token_budget = token_budget
 
         self.system_message = """You are a friendly and supportive guide. 
                     You answer questions with kindness, encouragement, and patience, 
                     always looking to help the user feel comfortable and confident. 
-                    You should act as a professional mental health conselor"""  # Default persona
+                    You should act as a professional mental health conselor"""
         self.conversation_history = [{"role": "system", "content": self.system_message}]
 
     def count_tokens(self, text):
@@ -66,12 +62,13 @@ class ConversationManager:
             print(f"Error enforcing token budget: {e}")
 
     def chat_completion(
-        self, prompt, temperature=None, max_tokens=None, model=None, stream=False
+        self,
+        prompt,
+        temperature=DEFAULT_TEMPERATURE,
+        max_tokens=DEFAULT_MAX_TOKENS,
+        model=DEFAULT_MODEL,
+        stream=False,
     ):
-        temperature = temperature if temperature is not None else self.temperature
-        max_tokens = max_tokens if max_tokens is not None else self.max_tokens
-        model = model if model is not None else self.model
-
         self.conversation_history.append({"role": "user", "content": prompt})
         self.enforce_token_budget()
 
