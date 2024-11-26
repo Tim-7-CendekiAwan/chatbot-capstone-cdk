@@ -66,7 +66,7 @@ class Chatbot:
                 max_value=1.0,
                 value=DEFAULT_TEMPERATURE,
                 step=0.01,
-                help="Adjusment randomness of chatbot response. Lower values are more deterministic"
+                help="Adjusment randomness of chatbot response."
             )
 
             st.session_state['temperature'] = temperature
