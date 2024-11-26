@@ -36,7 +36,6 @@ class Chatbot:
 
     def _display_assistant_response(self, user_input):
         temperature = st.session_state.get("temperature", DEFAULT_TEMPERATURE)
-
         response_stream = self.chat_manager.chat_completion(
             prompt=user_input, stream=True, temperature=temperature
         )
