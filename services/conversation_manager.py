@@ -91,3 +91,8 @@ class ConversationManager:
 
     def reset_conversation_history(self):
         self.conversation_history = [{"role": "system", "content": self.system_message}]
+
+    def set_system_persona(self, content: str):
+        system_role = self.conversation_history[0]
+        system_role.update({"content": content})
+        self.conversation_history[0] = system_role
