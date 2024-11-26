@@ -69,7 +69,7 @@ class Chatbot:
                 help="Adjusment randomness of chatbot response."
             )
 
-            st.session_state['temperature'] = temperature
+            st.session_state["temperature"] = temperature
 
     def _set_chatbot_persona(self, persona: str = "Formal"):
         system_message = f"""You are a friendly and supportive guide. 
