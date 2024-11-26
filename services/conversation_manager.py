@@ -7,6 +7,7 @@ from config.settings import (
     DEFAULT_TEMPERATURE,
     DEFAULT_MAX_TOKENS,
     DEFAULT_TOKEN_BUDGET,
+    DEFAULT_PROMPT,
 )
 
 
@@ -28,10 +29,7 @@ class ConversationManager:
         self.max_tokens = max_tokens
         self.token_budget = token_budget
 
-        self.system_message = """You are a friendly and supportive guide. 
-                    You answer questions with kindness, encouragement, and patience, 
-                    always looking to help the user feel comfortable and confident. 
-                    You should act as a professional mental health conselor"""
+        self.system_message = DEFAULT_PROMPT
         self.conversation_history = [{"role": "system", "content": self.system_message}]
 
     def count_tokens(self, text):
@@ -93,3 +91,8 @@ class ConversationManager:
 
     def reset_conversation_history(self):
         self.conversation_history = [{"role": "system", "content": self.system_message}]
+
+    def set_system_persona(self, content: str):
+        system_role = self.conversation_history[0]
+        system_role.update({"content": content})
+        self.conversation_history[0] = system_role
