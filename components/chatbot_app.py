@@ -75,12 +75,6 @@ class Chatbot:
 
             st.session_state["temperature"] = temperature
 
-    def _set_chatbot_persona(self, persona: str = "Formal"):
-        system_message = f"""You are a friendly and supportive guide. 
-                    You answer questions with kindness, encouragement, and patience, 
-                    always looking to help the user feel comfortable and confident. 
-                    You should act as a professional mental health conselor. 
-                    Also, use a {persona} tone"""
     def _display_persona_option(self, disabled=False):
         personalities = ("Professional", "Empathetic", "Motivational")
         return st.selectbox("Select personality", personalities, disabled=disabled)
