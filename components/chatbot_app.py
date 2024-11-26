@@ -1,3 +1,4 @@
+from os import system
 import streamlit as st
 from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
@@ -54,19 +55,45 @@ class Chatbot:
         self._display_assistant_response(user_input)
 
     def _display_sidebar(self):
-        personalities = ["Formal", "Casual", "Friendly"]
         with st.sidebar:
-            chosen_persona = st.selectbox("Select personality", personalities)
-            self._set_chatbot_persona(chosen_persona)
+            toggle_custom_persona = st.toggle("Use custom persona", value=False)
+            persona = self._display_persona_option(disabled=toggle_custom_persona)
+            self._handle_persona_changes(
+                persona=persona, toggle_custom_persona=toggle_custom_persona
+            )
 
-    def _set_chatbot_persona(self, persona: str = "Formal"):
-        system_message = f"""You are a friendly and supportive guide. 
-                    You answer questions with kindness, encouragement, and patience, 
-                    always looking to help the user feel comfortable and confident. 
-                    You should act as a professional mental health conselor. 
-                    Also, use a {persona} tone"""
+    def _display_persona_option(self, disabled=False):
+        personalities = ("Professional", "Empathetic", "Motivational")
+        return st.selectbox("Select personality", personalities, disabled=disabled)
 
-        system_role = self.conversation_history[0]
-        system_role.update({"content": system_message})
+    def _handle_persona_changes(
+        self, persona="Professional", toggle_custom_persona=False
+    ):
+        if toggle_custom_persona:
+            custom_persona = st.text_area(
+                "Define your own persona for the chatbot",
+                placeholder="e.g. You are a software engineer who love to help others",
+            )
+            self._set_user_defined_persona(custom_persona)
+        else:
+            self._set_predefined_persona(persona)
 
-        self.conversation_history[0] = system_role
+    def _set_user_defined_persona(self, user_prompt: str):
+        save_custom_persona = st.button(
+            "Save", icon=":material/save:", use_container_width=True
+        )
+        if user_prompt and save_custom_persona:
+            self._handle_custom_persona(user_prompt)
+
+    def _handle_custom_persona(self, user_prompt: str):
+        custom_persona = user_prompt
+        self.chat_manager.set_system_persona(custom_persona)
+
+    def _set_predefined_persona(self, persona="Professional"):
+        persona_prompt = f"""The user has selected {persona} persona.
+            Respond accordingly throughout this conversation."""
+        system_message_with_chosen_persona = (
+            self.chat_manager.system_message + persona_prompt
+        )
+
+        self.chat_manager.set_system_persona(system_message_with_chosen_persona)
