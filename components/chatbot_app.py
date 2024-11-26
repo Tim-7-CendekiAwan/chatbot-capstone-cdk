@@ -35,8 +35,10 @@ class Chatbot:
             st.write(user_input)
 
     def _display_assistant_response(self, user_input):
+        temperature = st.session_state.get("temperature", DEFAULT_TEMPERATURE)
+
         response_stream = self.chat_manager.chat_completion(
-            prompt=user_input, stream=True
+            prompt=user_input, stream=True, temperature=temperature
         )
         with st.chat_message("assistant"):
             streamed_response = st.write_stream(response_stream)
