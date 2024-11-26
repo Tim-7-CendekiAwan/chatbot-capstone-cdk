@@ -1,6 +1,7 @@
 import streamlit as st
 from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
+from config.settings import DEFAULT_TEMPERATURE
 
 
 class Chatbot:
@@ -58,6 +59,17 @@ class Chatbot:
         with st.sidebar:
             chosen_persona = st.selectbox("Select personality", personalities)
             self._set_chatbot_persona(chosen_persona)
+
+            temperature = st.slider(
+                "Set Temperature",
+                min_value=0.0,
+                max_value=1.0,
+                value=DEFAULT_TEMPERATURE,
+                step=0.01,
+                help="Adjusment randomness of chatbot response. Lower values are more deterministic"
+            )
+
+            st.session_state['temperature'] = temperature
 
     def _set_chatbot_persona(self, persona: str = "Formal"):
         system_message = f"""You are a friendly and supportive guide. 
