@@ -1,8 +1,7 @@
-from os import system
 import streamlit as st
 from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
-
+from config.settings import DEFAULT_MAX_TOKENS
 
 class Chatbot:
     def __init__(self, page_title="TemanTenang | Tim 7 CendekiAwan"):
@@ -23,11 +22,13 @@ class Chatbot:
 
     def generate_ui(self):
         st.set_page_config(page_title=self.page_title, page_icon="❤️")
-        st.title("TemanTenang")
+        st.title("TemanTenang ❤️")
         st.write(f"**EC2 Instance ID**: {self.instance_id}")
         self._display_sidebar()
         user_input = st.chat_input("Write a message")
         if user_input:
+            self._display_conversation_history(user_input)     
+        else:
             self._display_conversation_history(user_input)
 
     def _display_user_input(self, user_input: str):
@@ -35,8 +36,10 @@ class Chatbot:
             st.write(user_input)
 
     def _display_assistant_response(self, user_input):
+        max_tokens = st.session_state.get("max_tokens", DEFAULT_MAX_TOKENS)
+        print(f"max token di: {max_tokens}")
         response_stream = self.chat_manager.chat_completion(
-            prompt=user_input, stream=True
+            prompt=user_input, stream=True, max_tokens=max_tokens
         )
         with st.chat_message("assistant"):
             streamed_response = st.write_stream(response_stream)
@@ -50,9 +53,9 @@ class Chatbot:
             if message["role"] != "system":
                 with st.chat_message(message["role"]):
                     st.write(message["content"])
-
-        self._display_user_input(user_input)
-        self._display_assistant_response(user_input)
+        if user_input:
+            self._display_user_input(user_input)
+            self._display_assistant_response(user_input)
 
     def _display_sidebar(self):
         with st.sidebar:
@@ -60,6 +63,15 @@ class Chatbot:
             persona = self._display_persona_option(disabled=toggle_custom_persona)
             self._handle_persona_changes(
                 persona=persona, toggle_custom_persona=toggle_custom_persona
+            )
+
+            st.session_state["max_tokens"] = st.slider(
+                "Max Tokens Per Message",
+                min_value=512,
+                max_value=8192,
+                step=512,
+                value=DEFAULT_MAX_TOKENS,
+                help="Adjust token limit for assitant's response", 
             )
 
     def _display_persona_option(self, disabled=False):
