@@ -1,3 +1,26 @@
+"""
+chatbot_app.py
+this module is a streamlit-based chatbot app called TemanTenang, 
+providing an easy-to-use chat interface 
+with conversational AI with knowledge around mental health.
+
+some of the features available:
+- Predefined and custom persona options for chatbot behavior
+- temperature slider to adjust AI model response
+- Integration with ConversationManager for managing conversation logic
+- User interface with chat input and conversation history display
+
+Dependencies:
+- streamlit: for building user interface
+- ConversationManager: for handling the conversation
+- DEFAULT_TEMPERATURE: for configuring the default temperature value.
+
+Usage:
+1. Create an instance of the Chatbot class.
+2. Call the `generate_ui` method to launch the interface.
+
+Translated with DeepL.com (free version)
+"""
 import streamlit as st
 from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
@@ -35,7 +58,7 @@ class Chatbot:
     def _display_user_input(self, user_input: str):
         with st.chat_message("user"):
             st.write(user_input)
-          
+
     def _display_assistant_response(self, user_input):
         temperature = st.session_state.get("temperature", DEFAULT_TEMPERATURE)
         response_stream = self.chat_manager.chat_completion(
