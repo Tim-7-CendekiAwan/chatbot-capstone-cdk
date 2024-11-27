@@ -26,15 +26,16 @@ class Chatbot:
         st.title("TemanTenang")
         st.write(f"**EC2 Instance ID**: {self.instance_id}")
         self._display_sidebar()
-        self._display_conversation_history()
         user_input = st.chat_input("Write a message")
         if user_input:
             self._display_conversation_history(user_input)
+        else:
+            self._display_conversation_history()
 
     def _display_user_input(self, user_input: str):
         with st.chat_message("user"):
             st.write(user_input)
-           
+          
     def _display_assistant_response(self, user_input):
         temperature = st.session_state.get("temperature", DEFAULT_TEMPERATURE)
         response_stream = self.chat_manager.chat_completion(
@@ -55,9 +56,6 @@ class Chatbot:
         if user_input:
             self._display_user_input(user_input)
             self._display_assistant_response(user_input)
-
-        # self._display_user_input(user_input)
-        # self._display_assistant_response(user_input)
 
     def _display_sidebar(self):
         with st.sidebar:
