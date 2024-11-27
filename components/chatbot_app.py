@@ -66,12 +66,17 @@ class Chatbot:
         if save_api_key:
             if api_key.strip() == "":
                 st.error("API Key cannot be empty.")
+            elif not self.chat_manager.validate_api_key(api_key):
+                st.error("Invalid API Key . Please Check and try again")
             else:
                 st.session_state["api_key"] = api_key
                 self.chat_manager.set_api_key(api_key)
                 st.success("API Key saved successfully!")
-            if reset_api_key:
-                default_api_key = DEFAULT_API_KEY
-                st.session_state["api_key"] = default_api_key
-                self.chat_manager.set_api_key(default_api_key)
-            st.success("API Key reset to default successfully!")
+        if reset_api_key:
+            default_api_key = DEFAULT_API_KEY
+            st.session_state["api_key"] = default_api_key
+            self.chat_manager.set_api_key(default_api_key)
+            st.session_state["reset_success"] = True
+            st.success("API Key reset to default.")
+            st.rerun()
+

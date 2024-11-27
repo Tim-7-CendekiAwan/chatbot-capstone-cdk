@@ -23,13 +23,28 @@ class ConversationManager:
         self.model = model
         self.system_message = "You are a helpful assistant."
         self.conversation_history = [{"role": "system", "content": self.system_message}]
-
+    
     def set_api_key(self, api_key):
         self.api_key = api_key
         self.client = OpenAI(api_key=self.api_key, base_url=self.client.base_url)
         
     def reset_api_key(self):
         self.api_key = DEFAULT_API_KEY
+    
+    def validate_api_key(self, api_key):
+        try:
+            client = OpenAI(api_key=api_key, base_url=self.client.base_url)
+            # Perform a simple API request to validate the key
+            test_message = [{"role": "system", "content": "Test API key validation."}]
+            client.chat.completions.create(
+                model=self.model,
+                messages=test_message,
+            )
+            return True  # API key is valid
+        except Exception as e:
+            # Handle errors (e.g., invalid API key)
+            print(f"API Key validation failed: {e}")
+            return False
 
     def chat_completion(self, prompt, stream=False):
         if not self.api_key:
