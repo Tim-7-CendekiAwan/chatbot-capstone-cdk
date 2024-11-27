@@ -34,15 +34,13 @@ class ConversationManager:
     def validate_api_key(self, api_key):
         try:
             client = OpenAI(api_key=api_key, base_url=self.client.base_url)
-            # Perform a simple API request to validate the key
             test_message = [{"role": "system", "content": "Test API key validation."}]
             client.chat.completions.create(
                 model=self.model,
                 messages=test_message,
             )
-            return True  # API key is valid
+            return True 
         except Exception as e:
-            # Handle errors (e.g., invalid API key)
             print(f"API Key validation failed: {e}")
             return False
 
