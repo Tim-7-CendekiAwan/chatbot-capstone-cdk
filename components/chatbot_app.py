@@ -37,7 +37,6 @@ class Chatbot:
 
     def _display_assistant_response(self, user_input):
         max_tokens = st.session_state.get("max_tokens", DEFAULT_MAX_TOKENS)
-        print(f"max token di: {max_tokens}")
         response_stream = self.chat_manager.chat_completion(
             prompt=user_input, stream=True, max_tokens=max_tokens
         )
