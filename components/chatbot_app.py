@@ -2,6 +2,7 @@ import streamlit as st
 from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
 from config.settings import DEFAULT_TEMPERATURE
+from streamlit_chat import message 
 
 
 class Chatbot:
@@ -26,33 +27,36 @@ class Chatbot:
         st.title("TemanTenang")
         st.write(f"**EC2 Instance ID**: {self.instance_id}")
         self._display_sidebar()
-        self._display_conversation_history()
         user_input = st.chat_input("Write a message")
         if user_input:
             self._display_conversation_history(user_input)
+        else :
+            self._display_conversation_history()
 
     def _display_user_input(self, user_input: str):
-        with st.chat_message("user"):
-            st.write(user_input)
+        
+        message(user_input, is_user=True, key=f"user_{len(self.conversation_history)}", avatar_style="micah")
            
     def _display_assistant_response(self, user_input):
         temperature = st.session_state.get("temperature", DEFAULT_TEMPERATURE)
         response_stream = self.chat_manager.chat_completion(
-            prompt=user_input, stream=True, temperature=temperature
+            prompt=user_input, stream=False, temperature=temperature
         )
-        with st.chat_message("assistant"):
-            streamed_response = st.write_stream(response_stream)
+        
+        message(response_stream, key=f"assistant_{len(self.conversation_history)}")
 
         self.conversation_history.append(
-            {"role": "assistant", "content": streamed_response}
+            {"role": "assistant", "content":  response_stream, }
         )
 
     def _display_conversation_history(self, user_input: str = None):
-        for message in self.conversation_history:
-            if message["role"] != "system":
-                with st.chat_message(message["role"]):
-                    st.write(message["content"])
-        if user_input:
+       for idx, msg in enumerate(self.conversation_history):
+            if msg["role"] != "system":
+               if msg["role"] == "assistant":
+                    message(msg["content"],  key=f"assistant_{idx}") 
+               else :
+                    message(msg["content"], is_user=True,  key=f"user_{idx}", avatar_style="micah")
+       if user_input:
             self._display_user_input(user_input)
             self._display_assistant_response(user_input)
 
@@ -68,7 +72,7 @@ class Chatbot:
             )
 
             temperature = st.slider(
-                "Set Temperature",
+                "Temperature",
                 min_value=0.0,
                 max_value=1.0,
                 value=DEFAULT_TEMPERATURE,
@@ -77,6 +81,7 @@ class Chatbot:
             )
 
             st.session_state["temperature"] = temperature
+
 
     def _display_persona_option(self, disabled=False):
         personalities = ("Professional", "Empathetic", "Motivational")
