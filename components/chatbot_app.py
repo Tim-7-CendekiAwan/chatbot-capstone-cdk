@@ -3,8 +3,6 @@ from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
 from config.settings import DEFAULT_TEMPERATURE
 from streamlit_chat import message 
-
-
 class Chatbot:
     def __init__(self, page_title="TemanTenang | Tim 7 CendekiAwan"):
         self.instance_id = get_instance_id()
@@ -34,19 +32,16 @@ class Chatbot:
             self._display_conversation_history()
 
     def _display_user_input(self, user_input: str):
-        
-        message(user_input, is_user=True, key=f"user_{len(self.conversation_history)}", avatar_style="micah")
-           
+        message(user_input, is_user=True, key=f"user_{len(self.conversation_history)}", avatar_style="micah")   
+
     def _display_assistant_response(self, user_input):
         temperature = st.session_state.get("temperature", DEFAULT_TEMPERATURE)
         response_stream = self.chat_manager.chat_completion(
             prompt=user_input, stream=False, temperature=temperature
         )
-        
         message(response_stream, key=f"assistant_{len(self.conversation_history)}")
-
         self.conversation_history.append(
-            {"role": "assistant", "content":  response_stream, }
+            {"role": "assistant", "content":  response_stream}
         )
 
     def _display_conversation_history(self, user_input: str = None):
@@ -59,9 +54,6 @@ class Chatbot:
        if user_input:
             self._display_user_input(user_input)
             self._display_assistant_response(user_input)
-
-        # self._display_user_input(user_input)
-        # self._display_assistant_response(user_input)
 
     def _display_sidebar(self):
         with st.sidebar:
@@ -81,7 +73,6 @@ class Chatbot:
             )
 
             st.session_state["temperature"] = temperature
-
 
     def _display_persona_option(self, disabled=False):
         personalities = ("Professional", "Empathetic", "Motivational")
@@ -109,7 +100,7 @@ class Chatbot:
     def _handle_custom_persona(self, user_prompt: str):
         custom_persona = user_prompt
         self.chat_manager.set_system_persona(custom_persona)
-
+        
     def _set_predefined_persona(self, persona="Professional"):
         persona_prompt = f"""The user has selected {persona} persona.
             Respond accordingly throughout this conversation."""

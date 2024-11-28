@@ -8,6 +8,7 @@ from config.settings import (
     DEFAULT_MAX_TOKENS,
     DEFAULT_TOKEN_BUDGET,
     DEFAULT_PROMPT,
+    DEFAULT_INITIAL_MESSAGE,
 )
 
 
@@ -23,15 +24,13 @@ class ConversationManager:
     ):
 
         self.client = OpenAI(api_key=api_key, base_url=base_url)
-
         self.model = model
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.token_budget = token_budget
-
         self.system_message = DEFAULT_PROMPT
-        self.initial_message = {"role": "assistant", "content": "Hai, aku TemanTenang! 😊 Aku di sini untuk mendengarkan dan membantu. Apa pun yang ingin kamu ceritakan, aku akan ada untukmu. Yuk, mulai cerita!"}
-        self.conversation_history = [{"role": "system", "content": self.system_message}, self.initial_message]
+        self.initial_message = DEFAULT_INITIAL_MESSAGE
+        self.conversation_history = [{"role": "system", "content": self.system_message}, {"role": "assistant", "content": self.initial_message}]
 
     def count_tokens(self, text):
         try:
@@ -86,7 +85,6 @@ class ConversationManager:
             return None
 
         ai_response = response.choices[0].message.content
-        # self.conversation_history.append({"role": "assistant", "content": ai_response})
 
         return ai_response
 

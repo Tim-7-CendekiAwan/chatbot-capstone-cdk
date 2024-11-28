@@ -11,6 +11,7 @@ DEFAULT_MODEL = "meta-llama/Llama-Vision-Free"
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_TOKENS = 512
 DEFAULT_TOKEN_BUDGET = 4096
+DEFAULT_INITIAL_MESSAGE = "Hai, aku TemanTenang! 😊 Aku di sini untuk mendengarkan dan membantu. Apa pun yang ingin kamu ceritakan, aku akan ada untukmu. Yuk, mulai cerita!"
 DEFAULT_PROMPT = """You are a mental health counselor chatbot designed
 to provide empathetic, supportive, and solution-oriented responses 
 to users seeking help with mental health issues. 
@@ -37,3 +38,4 @@ Adhere to these guidelines:
 Your purpose is to create a safe space for users, offering practical advice and emotional support 
 to help them cope with mental health challenges. Be concise, relevant, and respectful in every interaction.
 """
+
