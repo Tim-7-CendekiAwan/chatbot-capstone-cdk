@@ -32,14 +32,14 @@ class Chatbot:
             self._display_conversation_history()
 
     def _display_user_input(self, user_input: str):
-        message(user_input, is_user=True, key=f"user_{len(self.conversation_history)}", avatar_style="micah")   
+        self._send_message(user_input, is_user=True)
 
     def _display_assistant_response(self, user_input):
         temperature = st.session_state.get("temperature", DEFAULT_TEMPERATURE)
         response_stream = self.chat_manager.chat_completion(
             prompt=user_input, stream=False, temperature=temperature
         )
-        message(response_stream, key=f"assistant_{len(self.conversation_history)}")
+        self._send_message(response_stream, is_user=False)
         self.conversation_history.append(
             {"role": "assistant", "content":  response_stream}
         )
@@ -47,10 +47,8 @@ class Chatbot:
     def _display_conversation_history(self, user_input: str = None):
        for idx, msg in enumerate(self.conversation_history):
             if msg["role"] != "system":
-               if msg["role"] == "assistant":
-                    message(msg["content"],  key=f"assistant_{idx}") 
-               else :
-                    message(msg["content"], is_user=True,  key=f"user_{idx}", avatar_style="micah")
+                is_user_message = msg["role"] != "assistant"
+                self._send_message(msg["content"], is_user=is_user_message, idx=idx)
        if user_input:
             self._display_user_input(user_input)
             self._display_assistant_response(user_input)
@@ -100,7 +98,7 @@ class Chatbot:
     def _handle_custom_persona(self, user_prompt: str):
         custom_persona = user_prompt
         self.chat_manager.set_system_persona(custom_persona)
-        
+
     def _set_predefined_persona(self, persona="Professional"):
         persona_prompt = f"""The user has selected {persona} persona.
             Respond accordingly throughout this conversation."""
@@ -109,3 +107,9 @@ class Chatbot:
         )
 
         self.chat_manager.set_system_persona(system_message_with_chosen_persona)
+    
+    def _send_message(self, message_content, is_user: bool = False, idx: int = None):
+        message_idx = idx if idx is not None else len(self.conversation_history)
+        key = f"user_{message_idx}" if is_user else f"assistant_{message_idx}"
+        avatar_style = "micah" if is_user else "boots"
+        message(message_content, is_user=is_user, key=key, avatar_style=avatar_style if is_user else None)
