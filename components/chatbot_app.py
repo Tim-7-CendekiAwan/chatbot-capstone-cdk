@@ -1,32 +1,8 @@
-"""
-chatbot_app.py
-this module is a streamlit-based chatbot app called TemanTenang, 
-providing an easy-to-use chat interface 
-with conversational AI with knowledge around mental health.
-
-some of the features available:
-- Predefined and custom persona options for chatbot behavior
-- temperature slider to adjust AI model response
-- Integration with ConversationManager for managing conversation logic
-- User interface with chat input and conversation history display
-
-Dependencies:
-- streamlit: for building user interface
-- ConversationManager: for handling the conversation
-- DEFAULT_TEMPERATURE: for configuring the default temperature value.
-
-Usage:
-1. Create an instance of the Chatbot class.
-2. Call the `generate_ui` method to launch the interface.
-
-Translated with DeepL.com (free version)
-"""
 import streamlit as st
 from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
 from config.settings import DEFAULT_TEMPERATURE
-
-
+from streamlit_chat import message 
 class Chatbot:
     def __init__(self, page_title="TemanTenang | Tim 7 CendekiAwan"):
         self.instance_id = get_instance_id()
@@ -52,31 +28,28 @@ class Chatbot:
         user_input = st.chat_input("Write a message")
         if user_input:
             self._display_conversation_history(user_input)
-        else:
+        else :
             self._display_conversation_history()
 
     def _display_user_input(self, user_input: str):
-        with st.chat_message("user"):
-            st.write(user_input)
+        self._send_message(user_input, is_user=True)
 
     def _display_assistant_response(self, user_input):
         temperature = st.session_state.get("temperature", DEFAULT_TEMPERATURE)
         response_stream = self.chat_manager.chat_completion(
-            prompt=user_input, stream=True, temperature=temperature
+            prompt=user_input, stream=False, temperature=temperature
         )
-        with st.chat_message("assistant"):
-            streamed_response = st.write_stream(response_stream)
-
+        self._send_message(response_stream, is_user=False)
         self.conversation_history.append(
-            {"role": "assistant", "content": streamed_response}
+            {"role": "assistant", "content":  response_stream}
         )
 
     def _display_conversation_history(self, user_input: str = None):
-        for message in self.conversation_history:
-            if message["role"] != "system":
-                with st.chat_message(message["role"]):
-                    st.write(message["content"])
-        if user_input:
+       for idx, msg in enumerate(self.conversation_history):
+            if msg["role"] != "system":
+                is_user_message = msg["role"] != "assistant"
+                self._send_message(msg["content"], is_user=is_user_message, idx=idx)
+       if user_input:
             self._display_user_input(user_input)
             self._display_assistant_response(user_input)
 
@@ -89,7 +62,7 @@ class Chatbot:
             )
 
             temperature = st.slider(
-                "Set Temperature",
+                "Temperature",
                 min_value=0.0,
                 max_value=1.0,
                 value=DEFAULT_TEMPERATURE,
@@ -134,3 +107,9 @@ class Chatbot:
         )
 
         self.chat_manager.set_system_persona(system_message_with_chosen_persona)
+    
+    def _send_message(self, message_content, is_user: bool = False, idx: int = None):
+        message_idx = idx if idx is not None else len(self.conversation_history)
+        key = f"user_{message_idx}" if is_user else f"assistant_{message_idx}"
+        avatar_style = "micah" if is_user else "boots"
+        message(message_content, is_user=is_user, key=key, avatar_style=avatar_style if is_user else None)
