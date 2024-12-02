@@ -31,8 +31,6 @@ class Chatbot:
         if user_input:
             self._display_conversation_history(user_input)     
         else:
-            self._display_conversation_history(user_input)
-        else :
             self._display_conversation_history()
 
     def _display_user_input(self, user_input: str):
