@@ -1,6 +1,8 @@
 import streamlit as st
 from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
+from config.settings import DEFAULT_MAX_TOKENS
+
 from config.settings import DEFAULT_TEMPERATURE
 from streamlit_chat import message 
 class Chatbot:
@@ -27,6 +29,8 @@ class Chatbot:
         self._display_sidebar()
         user_input = st.chat_input("Write a message")
         if user_input:
+            self._display_conversation_history(user_input)     
+        else:
             self._display_conversation_history(user_input)
         else :
             self._display_conversation_history()
@@ -35,9 +39,10 @@ class Chatbot:
         self._send_message(user_input, is_user=True)
 
     def _display_assistant_response(self, user_input):
+        max_tokens = st.session_state.get("max_tokens", DEFAULT_MAX_TOKENS)
         temperature = st.session_state.get("temperature", DEFAULT_TEMPERATURE)
         response_stream = self.chat_manager.chat_completion(
-            prompt=user_input, stream=False, temperature=temperature
+            prompt=user_input, stream=False, temperature=temperature, max_tokens=max_tokens
         )
         self._send_message(response_stream, is_user=False)
         self.conversation_history.append(
@@ -59,6 +64,15 @@ class Chatbot:
             persona = self._display_persona_option(disabled=toggle_custom_persona)
             self._handle_persona_changes(
                 persona=persona, toggle_custom_persona=toggle_custom_persona
+            )
+
+            st.session_state["max_tokens"] = st.slider(
+                "Max Tokens Per Message",
+                min_value=512,
+                max_value=4096,
+                step=512,
+                value=DEFAULT_MAX_TOKENS,
+                help="Adjust token limit for assitant's response", 
             )
 
             temperature = st.slider(
