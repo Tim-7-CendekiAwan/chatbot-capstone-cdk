@@ -22,7 +22,7 @@ class Chatbot:
 
     def generate_ui(self):
         st.set_page_config(page_title=self.page_title, page_icon="❤️")
-        st.title("TemanTenang ❤️")
+        st.title("TemanTenang")
         st.write(f"**EC2 Instance ID**: {self.instance_id}")
         self._display_sidebar()
         user_input = st.chat_input("Write a message")
@@ -67,7 +67,7 @@ class Chatbot:
             st.session_state["max_tokens"] = st.slider(
                 "Max Tokens Per Message",
                 min_value=512,
-                max_value=8192,
+                max_value=4096,
                 step=512,
                 value=DEFAULT_MAX_TOKENS,
                 help="Adjust token limit for assitant's response", 
