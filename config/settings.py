@@ -1,17 +1,18 @@
-
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from a .env file if available
 load_dotenv()
 
-# API Key and other settings
-DEFAULT_API_KEY = os.getenv("TOGETHER_API_KEY", "your_default_api_key") 
+DEFAULT_API_KEY = os.getenv("TOGETHER_API_KEY", "your_default_api_key")
 DEFAULT_BASE_URL = "https://api.together.xyz/v1"
 DEFAULT_MODEL = "meta-llama/Llama-Vision-Free"
 DEFAULT_TEMPERATURE = 0.7
-DEFAULT_MAX_TOKENS = 512
+DEFAULT_MAX_TOKENS = 2048
 DEFAULT_TOKEN_BUDGET = 4096
+DEFAULT_INITIAL_MESSAGE = """Hai, aku TemanTenang! 😊 
+Aku di sini untuk mendengarkan dan membantu. 
+Apa pun yang ingin kamu ceritakan, 
+aku akan ada untukmu. Yuk, mulai cerita!"""
 DEFAULT_PROMPT = """You are a mental health counselor chatbot designed
 to provide empathetic, supportive, and solution-oriented responses 
 to users seeking help with mental health issues. 
