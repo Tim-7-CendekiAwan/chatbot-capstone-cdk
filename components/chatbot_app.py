@@ -3,6 +3,7 @@ from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
 from config.settings import DEFAULT_MAX_TOKENS
 from config.settings import DEFAULT_TEMPERATURE
+from config.settings import DEFAULT_API_KEY
 from streamlit_chat import message 
 
 class Chatbot:
