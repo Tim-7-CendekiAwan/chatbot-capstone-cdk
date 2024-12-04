@@ -1,10 +1,8 @@
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from a .env file if available
 load_dotenv()
 
-# API Key and other settings
 DEFAULT_API_KEY = os.getenv("TOGETHER_API_KEY", "your_default_api_key")
 DEFAULT_BASE_URL = "https://api.together.xyz/v1"
 DEFAULT_MODEL = "meta-llama/Llama-Vision-Free"
@@ -41,4 +39,3 @@ Adhere to these guidelines:
 Your purpose is to create a safe space for users, offering practical advice and emotional support 
 to help them cope with mental health challenges. Be concise, relevant, and respectful in every interaction.
 """
-
