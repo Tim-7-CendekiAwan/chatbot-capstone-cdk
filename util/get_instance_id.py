@@ -19,3 +19,4 @@ def get_instance_id():
         return instance_id
     except requests.exceptions.RequestException:
         return "Instance ID not available (running locally or error in retrieval)"
+

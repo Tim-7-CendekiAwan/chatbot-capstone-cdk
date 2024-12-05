@@ -2,9 +2,10 @@ import streamlit as st
 from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
 from config.settings import DEFAULT_MAX_TOKENS
-
 from config.settings import DEFAULT_TEMPERATURE
-from streamlit_chat import message
+development/feature/api-key-input
+from streamlit_chat import message 
+
 
 class Chatbot:
     def __init__(self, page_title="TemanTenang | Tim 7 CendekiAwan"):
@@ -33,6 +34,29 @@ class Chatbot:
             self._display_conversation_history(user_input)
         else:
             self._display_conversation_history()
+            
+      
+        st.header("API Key Settings") 
+        api_key = st.text_input("Enter your API Key", type="password", key="api_key_input")
+        save_api_key = st.button("Save API Key")
+        reset_api_key = st.button("Reset to Default")
+
+        if save_api_key:
+            if api_key.strip() == "":
+                st.error("API Key cannot be empty.")
+            elif not self.chat_manager.validate_api_key(api_key):
+                st.error("Invalid API Key . Please Check and try again")
+            else:
+                st.session_state["api_key"] = api_key
+                self.chat_manager.set_api_key(api_key)
+                st.success("API Key saved successfully!")
+        if reset_api_key:
+            default_api_key = DEFAULT_API_KEY
+            st.session_state["api_key"] = default_api_key
+            self.chat_manager.set_api_key(default_api_key)
+            st.session_state["reset_success"] = True
+            st.success("API Key reset to default.")
+            st.rerun()
 
     def _display_user_input(self, user_input: str):
         self._send_message(user_input, is_user=True)
