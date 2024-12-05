@@ -3,8 +3,7 @@ from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
 from config.settings import DEFAULT_MAX_TOKENS
 from config.settings import DEFAULT_TEMPERATURE
-development/feature/api-key-input
-from streamlit_chat import message 
+from streamlit_chat import message
 
 
 class Chatbot:
@@ -34,29 +33,6 @@ class Chatbot:
             self._display_conversation_history(user_input)
         else:
             self._display_conversation_history()
-            
-      
-        st.header("API Key Settings") 
-        api_key = st.text_input("Enter your API Key", type="password", key="api_key_input")
-        save_api_key = st.button("Save API Key")
-        reset_api_key = st.button("Reset to Default")
-
-        if save_api_key:
-            if api_key.strip() == "":
-                st.error("API Key cannot be empty.")
-            elif not self.chat_manager.validate_api_key(api_key):
-                st.error("Invalid API Key . Please Check and try again")
-            else:
-                st.session_state["api_key"] = api_key
-                self.chat_manager.set_api_key(api_key)
-                st.success("API Key saved successfully!")
-        if reset_api_key:
-            default_api_key = DEFAULT_API_KEY
-            st.session_state["api_key"] = default_api_key
-            self.chat_manager.set_api_key(default_api_key)
-            st.session_state["reset_success"] = True
-            st.success("API Key reset to default.")
-            st.rerun()
 
     def _display_user_input(self, user_input: str):
         self._send_message(user_input, is_user=True)
@@ -72,7 +48,7 @@ class Chatbot:
         )
         self._send_message(response_stream, is_user=False)
         self.conversation_history.append(
-            {"role": "assistant", "content":  response_stream}
+            {"role": "assistant", "content": response_stream}
         )
 
     def _display_conversation_history(self, user_input: str = None):
@@ -91,6 +67,29 @@ class Chatbot:
             self._handle_persona_changes(
                 persona=persona, toggle_custom_persona=toggle_custom_persona
             )
+            st.header("API Key Settings")
+            api_key = st.text_input(
+                "Enter your API Key", type="password", key="api_key_input"
+            )
+            save_api_key = st.button("Save API Key")
+            reset_api_key = st.button("Reset to Default")
+
+            if save_api_key:
+                if api_key.strip() == "":
+                    st.error("API Key cannot be empty.")
+                elif not self.chat_manager.validate_api_key(api_key):
+                    st.error("Invalid API Key . Please Check and try again")
+                else:
+                    st.session_state["api_key"] = api_key
+                    self.chat_manager.set_api_key(api_key)
+                    st.success("API Key saved successfully!")
+            if reset_api_key:
+                default_api_key = DEFAULT_API_KEY
+                st.session_state["api_key"] = default_api_key
+                self.chat_manager.set_api_key(default_api_key)
+                st.session_state["reset_success"] = True
+                st.success("API Key reset to default.")
+                st.rerun()
 
             st.session_state["max_tokens"] = st.slider(
                 "Max Tokens Per Message",
@@ -107,7 +106,7 @@ class Chatbot:
                 max_value=1.0,
                 value=DEFAULT_TEMPERATURE,
                 step=0.01,
-                help="Adjusment randomness of chatbot response."
+                help="Adjusment randomness of chatbot response.",
             )
 
             st.session_state["temperature"] = temperature
