@@ -9,7 +9,7 @@ DEFAULT_MODEL = "meta-llama/Llama-Vision-Free"
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_TOKENS = 2048
 DEFAULT_TOKEN_BUDGET = 4096
-DEFAULT_INITIAL_MESSAGE = """Hai, aku TemanTenang! 😊 
+DEFAULT_INITIAL_MESSAGE = """Hai, aku TemanTenang! 😊
 Aku di sini untuk mendengarkan dan membantu. 
 Apa pun yang ingin kamu ceritakan, 
 aku akan ada untukmu. Yuk, mulai cerita!"""
