@@ -5,7 +5,6 @@ Welcome to the Tim 7 CendekiAwan AI App! This AI-powered app uses Streamlit for 
 [![Code Style: Google](https://img.shields.io/badge/code%20style-google-blue.svg)](https://google.github.io/styleguide/pyguide.html)
 
 ![pylint](https://img.shields.io/badge/Pylint-9.57-yellow?logo=python&logoColor=white)
-merge-api-key
 
 
 ## Getting Started
