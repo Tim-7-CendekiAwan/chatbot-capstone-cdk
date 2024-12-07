@@ -1,4 +1,10 @@
-from openai import OpenAI
+from openai import (
+    OpenAI,
+    OpenAIError,
+    BadRequestError,
+    PermissionDeniedError,
+    RateLimitError,
+)
 import tiktoken
 from config.settings import (
     DEFAULT_API_KEY,
@@ -22,7 +28,7 @@ class ConversationManager:
         max_tokens=DEFAULT_MAX_TOKENS,
         token_budget=DEFAULT_TOKEN_BUDGET,
     ):
-
+        self.api_key = api_key
         self.client = OpenAI(api_key=api_key, base_url=base_url)
         self.model = model
         self.temperature = temperature
@@ -30,7 +36,10 @@ class ConversationManager:
         self.token_budget = token_budget
         self.system_message = DEFAULT_PROMPT
         self.initial_message = DEFAULT_INITIAL_MESSAGE
-        self.conversation_history = [{"role": "system", "content": self.system_message}, {"role": "assistant", "content": self.initial_message}]
+        self.conversation_history = [
+            {"role": "system", "content": self.system_message},
+            {"role": "assistant", "content": self.initial_message},
+        ]
 
     def count_tokens(self, text):
         try:
@@ -46,7 +55,7 @@ class ConversationManager:
                 self.count_tokens(message["content"])
                 for message in self.conversation_history
             )
-        except Exception as e:
+        except (KeyError, AttributeError) as e:
             print(f"Error calculating total tokens used: {e}")
             return None
 
@@ -56,8 +65,28 @@ class ConversationManager:
                 if len(self.conversation_history) <= 1:
                     break
                 self.conversation_history.pop(1)
-        except Exception as e:
+        except (KeyError, AttributeError, TypeError) as e:
             print(f"Error enforcing token budget: {e}")
+
+    def set_api_key(self, api_key):
+        self.api_key = api_key
+        self.client = OpenAI(api_key=self.api_key, base_url=self.client.base_url)
+
+    def reset_api_key(self):
+        self.api_key = DEFAULT_API_KEY
+
+    def validate_api_key(self, api_key):
+        try:
+            client = OpenAI(api_key=api_key, base_url=self.client.base_url)
+            test_message = [{"role": "system", "content": "Test API key validation."}]
+            client.chat.completions.create(
+                model=self.model,
+                messages=test_message,
+            )
+            return True
+        except Exception as e:
+            print(f"API Key validation failed: {e}")
+            return False
 
     def chat_completion(
         self,
@@ -80,7 +109,12 @@ class ConversationManager:
             )
             if stream:
                 return response
-        except Exception as e:
+        except (
+            OpenAIError,
+            PermissionDeniedError,
+            BadRequestError,
+            RateLimitError,
+        ) as e:
             print(f"Error generating response: {e}")
             return None
 

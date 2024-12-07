@@ -2,9 +2,11 @@ import streamlit as st
 from services.conversation_manager import ConversationManager
 from util.get_instance_id import get_instance_id
 from config.settings import DEFAULT_MAX_TOKENS
-
+from config.settings import DEFAULT_API_KEY
 from config.settings import DEFAULT_TEMPERATURE
-from streamlit_chat import message 
+from streamlit_chat import message
+
+
 class Chatbot:
     def __init__(self, page_title="TemanTenang | Tim 7 CendekiAwan"):
         self.instance_id = get_instance_id()
@@ -29,7 +31,7 @@ class Chatbot:
         self._display_sidebar()
         user_input = st.chat_input("Write a message")
         if user_input:
-            self._display_conversation_history(user_input)     
+            self._display_conversation_history(user_input)
         else:
             self._display_conversation_history()
 
@@ -40,19 +42,22 @@ class Chatbot:
         max_tokens = st.session_state.get("max_tokens", DEFAULT_MAX_TOKENS)
         temperature = st.session_state.get("temperature", DEFAULT_TEMPERATURE)
         response_stream = self.chat_manager.chat_completion(
-            prompt=user_input, stream=False, temperature=temperature, max_tokens=max_tokens
+            prompt=user_input,
+            stream=False,
+            temperature=temperature,
+            max_tokens=max_tokens,
         )
         self._send_message(response_stream, is_user=False)
         self.conversation_history.append(
-            {"role": "assistant", "content":  response_stream}
+            {"role": "assistant", "content": response_stream}
         )
 
     def _display_conversation_history(self, user_input: str = None):
-       for idx, msg in enumerate(self.conversation_history):
+        for idx, msg in enumerate(self.conversation_history):
             if msg["role"] != "system":
                 is_user_message = msg["role"] != "assistant"
                 self._send_message(msg["content"], is_user=is_user_message, idx=idx)
-       if user_input:
+        if user_input:
             self._display_user_input(user_input)
             self._display_assistant_response(user_input)
 
@@ -63,6 +68,29 @@ class Chatbot:
             self._handle_persona_changes(
                 persona=persona, toggle_custom_persona=toggle_custom_persona
             )
+            st.header("API Key Settings")
+            api_key = st.text_input(
+                "Enter your API Key", type="password", key="api_key_input"
+            )
+            save_api_key = st.button("Save API Key")
+            reset_api_key = st.button("Reset to Default")
+
+            if save_api_key:
+                if api_key.strip() == "":
+                    st.error("API Key cannot be empty.")
+                elif not self.chat_manager.validate_api_key(api_key):
+                    st.error("Invalid API Key . Please Check and try again")
+                else:
+                    st.session_state["api_key"] = api_key
+                    self.chat_manager.set_api_key(api_key)
+                    st.success("API Key saved successfully!")
+            if reset_api_key:
+                default_api_key = DEFAULT_API_KEY
+                st.session_state["api_key"] = default_api_key
+                self.chat_manager.set_api_key(default_api_key)
+                st.session_state["reset_success"] = True
+                st.success("API Key reset to default.")
+                st.rerun()
 
             st.session_state["max_tokens"] = st.slider(
                 "Max Tokens Per Message",
@@ -70,7 +98,7 @@ class Chatbot:
                 max_value=4096,
                 step=512,
                 value=DEFAULT_MAX_TOKENS,
-                help="Adjust token limit for assitant's response", 
+                help="Adjust token limit for assitant's response",
             )
 
             temperature = st.slider(
@@ -79,7 +107,7 @@ class Chatbot:
                 max_value=1.0,
                 value=DEFAULT_TEMPERATURE,
                 step=0.01,
-                help="Adjusment randomness of chatbot response."
+                help="Adjusment randomness of chatbot response.",
             )
 
             st.session_state["temperature"] = temperature
@@ -119,9 +147,14 @@ class Chatbot:
         )
 
         self.chat_manager.set_system_persona(system_message_with_chosen_persona)
-    
+
     def _send_message(self, message_content, is_user: bool = False, idx: int = None):
         message_idx = idx if idx is not None else len(self.conversation_history)
         key = f"user_{message_idx}" if is_user else f"assistant_{message_idx}"
         avatar_style = "micah" if is_user else "boots"
-        message(message_content, is_user=is_user, key=key, avatar_style=avatar_style if is_user else None)
+        message(
+            message_content,
+            is_user=is_user,
+            key=key,
+            avatar_style=avatar_style if is_user else None,
+        )
